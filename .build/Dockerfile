@@ -35,11 +35,6 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 USER root
 
-RUN apt-get update --yes && \
-    apt-get install --yes libopenexr-dev
-    
-RUN apt-get update --yes && \
-    apt-get install --yes openexr
 
 # Install all OS dependencies for notebook server that starts but lacks all
 # features (e.g., download as all possible file formats)
@@ -320,10 +315,26 @@ WORKDIR "${HOME}"
 ############################################################################
 
 LABEL maintainer="Christoph Schranz <christoph.schranz@salzburgresearch.at>"
+USER root
+
+RUN apt-get update --yes && \
+    apt-get install --yes python3-pip
+
+RUN apt-get update --yes && \
+    apt-get install --yes libopenexr-dev
+    
+RUN apt-get update --yes && \
+    apt-get install --yes openexr
+
 
 # Install Tensorflow, check compatibility here:
 # https://www.tensorflow.org/install/source#gpu
 # installation via conda leads to errors in version 4.8.2
+USER root
+RUN pip install --upgrade pip && \
+    pip install OpenEXR
+
+
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir "tensorflow==2.8.0" && \
     pip install --no-cache-dir keras &&\
@@ -332,9 +343,10 @@ RUN pip install --upgrade pip && \
     pip install mri-datasets && \
     pip install matplotlib==3.5.1 && \
     pip install matplotlib-inline==0.1.3 && \
+    pip install pydicom && \
     pip install rasterio==1.2.10 && \
     pip install scipy==1.8.0 && \
-    pip install Shapely==1.8.1.post1 && \
+    pip install Shapely==1.8.1.post1 && \    
     pip install volumentations-3D
 
 
